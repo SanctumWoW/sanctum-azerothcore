@@ -3960,8 +3960,8 @@ void ObjectMgr::LoadPlayerInfo()
 
             PlayerClassLevelInfo& levelInfo = info->levelInfo[current_level - 1];
 
-            levelInfo.basehealth = fields[2].Get<uint16>();
-            levelInfo.basemana   = fields[3].Get<uint16>();
+            levelInfo.basehealth = fields[2].Get<uint32>();
+            levelInfo.basemana   = fields[3].Get<uint32>();
 
             ++count;
         } while (result->NextRow());
@@ -4052,7 +4052,7 @@ void ObjectMgr::LoadPlayerInfo()
 
                 PlayerLevelInfo& levelInfo = info->levelInfo[current_level - 1];
                 for (int i = 0; i < MAX_STATS; i++)
-                    levelInfo.stats[i] = fields[i + 3].Get<uint8>();
+                    levelInfo.stats[i] = fields[i + 3].Get<uint16>();
             }
 
             ++count;
@@ -9342,7 +9342,7 @@ void ObjectMgr::LoadCreatureClassLevelStats()
 
         for (uint8 i = 0; i < MAX_EXPANSIONS; ++i)
         {
-            stats.BaseHealth[i] = fields[2 + i].Get<uint16>();
+            stats.BaseHealth[i] = fields[2 + i].Get<uint32>();
 
             if (stats.BaseHealth[i] == 0)
             {
@@ -9372,7 +9372,7 @@ void ObjectMgr::LoadCreatureClassLevelStats()
             }
         }
 
-        stats.BaseMana = fields[5].Get<uint16>();
+        stats.BaseMana = fields[5].Get<uint32>();
         stats.BaseArmor = fields[6].Get<uint16>();
 
         stats.AttackPower = fields[7].Get<uint16>();

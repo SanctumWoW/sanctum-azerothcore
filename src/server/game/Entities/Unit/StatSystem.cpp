@@ -249,7 +249,7 @@ void Player::UpdateArmor()
 
     float value = GetModifierValue(unitMod, BASE_VALUE);   // base armor (from items)
     value *= GetModifierValue(unitMod, BASE_PCT);           // armor percent from items
-    value += GetStat(STAT_AGILITY) * 2.0f;                  // armor bonus from stats
+    value += GetStat(STAT_AGILITY) * 0.15f;                 // armor bonus from stats
     value += GetModifierValue(unitMod, TOTAL_VALUE);
 
     //add dynamic flat mods
@@ -1183,7 +1183,7 @@ void Guardian::UpdateArmor()
 {
     float value = GetModifierValue(UNIT_MOD_ARMOR, BASE_VALUE);
     value *= GetModifierValue(UNIT_MOD_ARMOR, BASE_PCT);
-    value += std::max<float>(GetStat(STAT_AGILITY) - GetCreateStat(STAT_AGILITY), 0.0f) * 2.0f;
+    value += std::max<float>(GetStat(STAT_AGILITY) - GetCreateStat(STAT_AGILITY), 0.0f) * 0.15f;
     value += GetModifierValue(UNIT_MOD_ARMOR, TOTAL_VALUE);
     value *= GetModifierValue(UNIT_MOD_ARMOR, TOTAL_PCT);
     SetArmor(int32(value));
