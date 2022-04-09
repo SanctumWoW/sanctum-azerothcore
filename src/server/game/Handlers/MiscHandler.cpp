@@ -436,6 +436,8 @@ void WorldSession::HandleLogoutRequestOpcode(WorldPackets::Character::LogoutRequ
     else if (preventAfkSanctuaryLogout || preventAfkLogout || GetPlayer()->duel || GetPlayer()->HasAura(9454)) // is dueling or frozen by GM via freeze command
         reason = 2;                                         // FIXME - Need the correct value
 
+    sScriptMgr->OnBeforePlayerLogout(GetPlayer(), reason, instantLogout)
+
     WorldPackets::Character::LogoutResponse logoutResponse;
     logoutResponse.LogoutResult = reason;
     logoutResponse.Instant = instantLogout;

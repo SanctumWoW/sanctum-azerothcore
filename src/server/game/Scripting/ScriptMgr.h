@@ -1067,6 +1067,9 @@ public:
     // Called when a player logs out.
     virtual void OnLogout(Player* /*player*/) { }
 
+    // Called when a player logs out.
+    virtual void OnBeforeLogout(Player* /*player*/, uint32& /*reason*/, bool& /*instant*/) { }
+
     // Called when a player is created.
     virtual void OnCreate(Player* /*player*/) { }
 
@@ -2203,6 +2206,7 @@ public: /* PlayerScript */
     void OnPlayerLogin(Player* player);
     void OnPlayerLoadFromDB(Player* player);
     void OnPlayerLogout(Player* player);
+    void OnBeforePlayerLogout(Player* player, uint32& reason, bool& instant);
     void OnPlayerCreate(Player* player);
     void OnPlayerSave(Player* player);
     void OnPlayerDelete(ObjectGuid guid, uint32 accountId);

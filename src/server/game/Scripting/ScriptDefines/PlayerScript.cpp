@@ -329,6 +329,14 @@ void ScriptMgr::OnPlayerLogout(Player* player)
     });
 }
 
+void ScriptMgr::OnBeforePlayerLogout(Player* player, uint32& reason, bool& instant)
+{
+    ExecuteScript<PlayerScript>([&](PlayerScript* script)
+    {
+        script->OnBeforeLogout(player, reason, instant);
+    });
+}
+
 void ScriptMgr::OnPlayerCreate(Player* player)
 {
     ExecuteScript<PlayerScript>([&](PlayerScript* script)
