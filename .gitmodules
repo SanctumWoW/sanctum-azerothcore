@@ -1,3 +1,6 @@
 [submodule "deps/git-subrepo"]
 	path = deps/git-subrepo
 	url = https://github.com/ingydotnet/git-subrepo.git
+[submodule "modules/sanctum-collection"]
+	path = modules/sanctum-collection
+	url = git@github.com:SanctumWoW/sanctum-collection.git
