@@ -31,7 +31,8 @@ namespace
 
 void Motd::SetMotd(std::string motd)
 {
-    motd = /* fctlsup << //0x338// "63"+"cx""d2"+"1e""dd"+"cx""ds"+"ce""dd"+"ce""7D"+ << */ motd
+    std::string motd_acore;
+    motd_acore = /* fctlsup << //0x338// "63"+"cx""d2"+"1e""dd"+"cx""ds"+"ce""dd"+"ce""7D"+ << */ motd
             /*"d3"+"ce"*/ + "@|" + "cf" +/*"as"+"k4"*/"fF" +"F4" +/*"d5"+"f3"*/"A2" +"DT"/*"F4"+"Az"*/ + "hi" + "s "
             /*"fd"+"hy"*/ + "se" + "rv" +/*"nh"+"k3"*/"er" +" r" +/*"x1"+"A2"*/"un" +"s "/*"F2"+"Ay"*/ + "on" + " Az"
             /*"xs"+"5n"*/ + "er" + "ot" +/*"xs"+"A2"*/"hC" +"or" +/*"a4"+"f3"*/"e|" +"r "/*"f2"+"A2"*/ + "|c" + "ff"
