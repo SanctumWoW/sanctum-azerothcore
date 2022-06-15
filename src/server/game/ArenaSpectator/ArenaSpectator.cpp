@@ -16,6 +16,7 @@
  */
 
 #include "ArenaSpectator.h"
+#include "ArenaTeamMgr.h"
 #include "BattlegroundMgr.h"
 #include "LFGMgr.h"
 #include "Map.h"
@@ -164,6 +165,45 @@ bool ArenaSpectator::HandleSpectatorSpectateCommand(ChatHandler* handler, std::s
     if (bgPreparation)
         return true;
 
+    // search for two teams
+    Battleground* bGround = spectate->GetBattleground();
+    if (bGround->isRated())
+    {
+        uint32 slot = bGround->GetArenaType() - 2;
+        if (bGround->GetArenaType() == 1)
+            slot = 2;
+        uint32 firstTeamID = spectate->GetArenaTeamId(slot);
+        uint32 secondTeamID = 0;
+        //Player* firstTeamMember = spectate;
+        Player* secondTeamMember = NULL;
+        for (Battleground::BattlegroundPlayerMap::const_iterator itr = bGround->GetPlayers().begin(); itr != bGround->GetPlayers().end(); ++itr)
+            if (Player* tmpPlayer = ObjectAccessor::FindPlayer(itr->first))
+            {
+                if (tmpPlayer->IsSpectator())
+                    continue;
+
+                uint32 tmpID = tmpPlayer->GetArenaTeamId(slot);
+                if (tmpID != firstTeamID && tmpID > 0)
+                {
+                    secondTeamID = tmpID;
+                    secondTeamMember = tmpPlayer;
+                    break;
+                }
+            }
+
+        if (firstTeamID > 0 && secondTeamID > 0 && secondTeamMember)
+        {
+            ArenaTeam* firstTeam = sArenaTeamMgr->GetArenaTeamById(firstTeamID);
+            ArenaTeam* secondTeam = sArenaTeamMgr->GetArenaTeamById(secondTeamID);
+            if (firstTeam && secondTeam)
+            {
+                handler->PSendSysMessage("Match: |cFFff0000%s|r |TInterface/GossipFrame/BattleMasterGossipIcon:16:16:0:-2|t|r|cFFff0000%s|r", firstTeam->GetName().c_str(), secondTeam->GetName().c_str());
+                handler->PSendSysMessage("Use \".spectate leave\" to stop spectating.");
+                handler->PSendSysMessage("Use \".spectate watch playername/target\" to spectate a specific player.");
+            }
+        }
+    }
+
     float z = spectate->GetMapId() == 618 ? std::max(28.27f, spectate->GetPositionZ() + 0.25f) : spectate->GetPositionZ() + 0.25f;
 
     player->SetPendingSpectatorForBG(spectate->GetBattlegroundId());
@@ -187,6 +227,8 @@ bool ArenaSpectator::HandleSpectatorWatchCommand(ChatHandler* handler, std::stri
     if (!bg || bg->GetStatus() != STATUS_IN_PROGRESS)
         return true;
 
+    // My if statement changes
+    // if (!spectate || !spectate->IsAlive() || (spectate->IsSpectator() && spectate->GetGUID() != player->GetGUID()) || !spectate->IsInWorld() || !spectate->FindMap() || spectate->IsBeingTeleported() || spectate->FindMap() != player->FindMap() || (!bg->IsPlayerInBattleground(spectate->GetGUID()) && spectate->GetGUID() != player->GetGUID()))
     Player* spectate = ObjectAccessor::FindPlayerByName(name);
     if (!spectate || !spectate->IsAlive() || spectate->IsSpectator() || spectate->GetGUID() == player->GetGUID() || !spectate->IsInWorld() || !spectate->FindMap() || spectate->IsBeingTeleported() || spectate->FindMap() != player->FindMap() || !bg->IsPlayerInBattleground(spectate->GetGUID()))
         return true;
@@ -200,6 +242,10 @@ bool ArenaSpectator::HandleSpectatorWatchCommand(ChatHandler* handler, std::stri
             if (u->GetGUID() == spectate->GetGUID())
                 return true;
         }
+
+    // My changes
+    if (spectate->GetGUID() == player->GetGUID())
+        return true;
 
     if (player->GetUInt64Value(PLAYER_FARSIGHT) || player->m_seer != player) // pussywizard: below this point we must not have a viewpoint!
         return true;

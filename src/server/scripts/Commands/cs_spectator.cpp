@@ -17,6 +17,7 @@
 
 #include "AccountMgr.h"
 #include "ArenaSpectator.h"
+#include "ArenaTeamMgr.h"
 #include "BattlegroundMgr.h"
 #include "Chat.h"
 #include "Player.h"
@@ -34,16 +35,16 @@ public:
     {
         static ChatCommandTable spectatorCommandTable =
         {
-            { "version",  HandleSpectatorVersionCommand,  SEC_PLAYER, Console::No },
-            { "reset",    HandleSpectatorResetCommand,    SEC_PLAYER, Console::No },
-            { "spectate", HandleSpectatorSpectateCommand, SEC_PLAYER, Console::No },
+            { "version",  HandleSpectatorVersionCommand,  SEC_ADMINISTRATOR, Console::No },
+            { "reset",    HandleSpectatorResetCommand,    SEC_DEVELOPER, Console::No },
+            { "spectate", HandleSpectatorSpectateCommand, SEC_DEVELOPER, Console::No },
             { "watch",    HandleSpectatorWatchCommand,    SEC_PLAYER, Console::No },
             { "leave",    HandleSpectatorLeaveCommand,    SEC_PLAYER, Console::No },
-            { "",         HandleSpectatorCommand,         SEC_PLAYER, Console::No }
+            { "",         HandleSpectatorCommand,         SEC_DEVELOPER, Console::No }
         };
         static ChatCommandTable commandTable =
         {
-            { "spect", spectatorCommandTable }
+            { "spectate", spectatorCommandTable }
         };
         return commandTable;
     }
@@ -52,8 +53,8 @@ public:
     {
         handler->PSendSysMessage("Incorrect syntax.");
         handler->PSendSysMessage("Command has subcommands:");
-        handler->PSendSysMessage("   spectate");
-        handler->PSendSysMessage("   leave");
+        handler->PSendSysMessage("spectate");
+        handler->PSendSysMessage("leave");
         return true;
     }
 
