@@ -92,7 +92,7 @@ bool ArenaTeam::AddMember(ObjectGuid playerGuid)
     uint8 playerClass;
 
     // Check if arena team is full (Can't have more than type * 2 players)
-    if (GetMembersSize() >= GetType() * 2)
+    if (GetMembersSize() >= GetType() * 2 || (GetType() == 5 && GetMembersSize() >= 1))
         return false;
 
     // xinef: Get player name and class from player storage or global data storage
@@ -1085,5 +1085,6 @@ std::unordered_map<uint8, uint8> ArenaTeam::ArenaReqPlayersForType =
 {
     { ARENA_TYPE_2v2, 4},
     { ARENA_TYPE_3v3, 6},
-    { ARENA_TYPE_5v5, 10}
+    { ARENA_TYPE_5v5, 10},
+    { 1, 2}
 };
