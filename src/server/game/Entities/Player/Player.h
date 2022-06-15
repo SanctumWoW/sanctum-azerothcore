@@ -289,8 +289,8 @@ typedef std::list<PlayerCreateInfoItem> PlayerCreateInfoItems;
 struct PlayerClassLevelInfo
 {
     PlayerClassLevelInfo()  = default;
-    uint16 basehealth{0};
-    uint16 basemana{0};
+    uint32 basehealth{0};
+    uint32 basemana{0};
 };
 
 struct PlayerClassInfo
@@ -302,9 +302,9 @@ struct PlayerClassInfo
 
 struct PlayerLevelInfo
 {
-    PlayerLevelInfo() { for (unsigned char & stat : stats) stat = 0; }
+    PlayerLevelInfo() { for (unsigned short & stat : stats) stat = 0; }
 
-    uint8 stats[MAX_STATS];
+    uint16 stats[MAX_STATS];
 };
 
 typedef std::list<uint32> PlayerCreateInfoSpells;

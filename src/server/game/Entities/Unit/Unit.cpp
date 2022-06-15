@@ -19580,6 +19580,9 @@ void Unit::RewardRage(uint32 damage, uint32 weaponSpeedHitFactor, bool attacker)
     if (getLevel() > 70)
         rageconversion += 13.27f * (getLevel() - 70);
 
+    if (getLevel() == 100)
+        rageconversion = 6000.0f;
+
     if (attacker)
     {
         addRage = (damage / rageconversion * 7.5f + weaponSpeedHitFactor) / 2;

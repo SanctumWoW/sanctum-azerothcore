@@ -523,8 +523,8 @@ struct PetLevelInfo
     PetLevelInfo() { for (unsigned short & stat : stats) stat = 0; }
 
     uint16 stats[MAX_STATS];
-    uint16 health{0};
-    uint16 mana{0};
+    uint32 health{0};
+    uint32 mana{0};
     uint32 armor{0};
     uint16 min_dmg{0};
     uint16 max_dmg{0};
