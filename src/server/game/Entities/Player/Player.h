@@ -302,7 +302,7 @@ struct PlayerClassInfo
 
 struct PlayerLevelInfo
 {
-    PlayerLevelInfo() { for (unsigned char & stat : stats) stat = 0; }
+    PlayerLevelInfo() { for (unsigned short & stat : stats) stat = 0; }
 
     uint16 stats[MAX_STATS];
 };

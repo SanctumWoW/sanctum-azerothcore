@@ -3435,8 +3435,8 @@ void ObjectMgr::LoadPetLevelInfo()
         // data for level 1 stored in [0] array element, ...
         PetLevelInfo* pLevelInfo = &pInfoMapEntry[current_level - 1];
 
-        pLevelInfo->health = fields[2].Get<uint16>();
-        pLevelInfo->mana   = fields[3].Get<uint16>();
+        pLevelInfo->health = fields[2].Get<uint32>();
+        pLevelInfo->mana   = fields[3].Get<uint32>();
         pLevelInfo->armor  = fields[9].Get<uint32>();
         pLevelInfo->min_dmg = fields[10].Get<uint16>();
         pLevelInfo->max_dmg = fields[11].Get<uint16>();

@@ -1183,7 +1183,7 @@ void Guardian::UpdateArmor()
 {
     float value = GetModifierValue(UNIT_MOD_ARMOR, BASE_VALUE);
     value *= GetModifierValue(UNIT_MOD_ARMOR, BASE_PCT);
-    value += std::max<float>(GetStat(STAT_AGILITY) - GetCreateStat(STAT_AGILITY), 0.0f) * 0.15f;
+    value += std::max<float>(GetStat(STAT_AGILITY) - GetCreateStat(STAT_AGILITY), 0.0f) * 2.0f;
     value += GetModifierValue(UNIT_MOD_ARMOR, TOTAL_VALUE);
     value *= GetModifierValue(UNIT_MOD_ARMOR, TOTAL_PCT);
     SetArmor(int32(value));
