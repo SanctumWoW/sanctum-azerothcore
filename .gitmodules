@@ -4,3 +4,5 @@
 [submodule "modules/sanctum-collection"]
 	path = modules/sanctum-collection
 	url = git@github.com:SanctumWoW/sanctum-collection.git
+    branch = master
+    update = rebase
