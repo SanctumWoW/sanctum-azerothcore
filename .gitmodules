@@ -6,3 +6,6 @@
 	url = git@github.com:SanctumWoW/sanctum-collection.git
     branch = master
     update = rebase
+[submodule "modules/mod-eluna"]
+	path = modules/mod-eluna
+	url = https://github.com/azerothcore/mod-eluna.git
