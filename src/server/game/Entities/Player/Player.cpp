@@ -13530,7 +13530,7 @@ LootItem* Player::StoreLootItem(uint8 lootSlot, Loot* loot, InventoryResult& msg
 uint32 Player::CalculateTalentsPoints() const
 {
     uint32 base_talent = GetLevel() < 10 ? 0 : GetLevel() - 9;
-    uint32 custom_talent = std::min(base_talent, 71);
+    uint32 custom_talent = std::min(GetLevel() < 10 ? 0 : GetLevel() - 9, 71);
 
     uint32 talentPointsForLevel = custom_talent + m_questRewardTalentCount;
 
