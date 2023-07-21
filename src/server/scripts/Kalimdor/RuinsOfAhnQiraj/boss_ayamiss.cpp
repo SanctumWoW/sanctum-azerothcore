@@ -20,7 +20,6 @@
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
 #include "ruins_of_ahnqiraj.h"
-#include "TaskScheduler.h"
 
 enum Spells
 {
@@ -88,7 +87,8 @@ struct boss_ayamiss : public BossAI
         _phase = PHASE_AIR;
         _enraged = false;
         SetCombatMovement(false);
-        _scheduler.CancelAll();
+        scheduler.CancelAll();
+        me->SetReactState(REACT_AGGRESSIVE);
     }
 
     void JustSummoned(Creature* who) override
@@ -116,21 +116,32 @@ struct boss_ayamiss : public BossAI
         else if (type == WAYPOINT_MOTION_TYPE && id == POINT_GROUND)
         {
             SetCombatMovement(true);
+            me->SetDisableGravity(false);
 
             me->m_Events.AddEventAtOffset([this]()
             {
+                me->SetReactState(REACT_AGGRESSIVE);
                 if (me->GetVictim())
                 {
                     me->GetMotionMaster()->MoveChase(me->GetVictim());
                 }
 
             }, 1s);
+
+            scheduler.Schedule(5s, 8s, [this](TaskContext context) {
+                DoCastVictim(SPELL_LASH);
+                context.Repeat(8s, 15s);
+            }).Schedule(16s, [this](TaskContext context)
+            {
+                DoCastSelf(SPELL_THRASH);
+                context.Repeat();
+            });
         }
     }
 
-    void ScheduleTasks()
+    void ScheduleTasks() override
     {
-        _scheduler.Schedule(20s, 30s, [this](TaskContext context)
+        scheduler.Schedule(20s, 30s, [this](TaskContext context)
         {
             DoCastSelf(SPELL_STINGER_SPRAY);
             context.Repeat(15s, 20s);
@@ -147,7 +158,7 @@ struct boss_ayamiss : public BossAI
             }
 
             context.Repeat(RAND(2400ms, 3600ms));
-        }).Schedule(15s, [this](TaskContext context) {
+        }).Schedule(15s, 28s, [this](TaskContext context) {
             if (Unit* target = SelectTarget(SelectTargetMethod::Random, 0, 0, true))
             {
                 DoCast(target, SPELL_PARALYZE, true);
@@ -205,22 +216,12 @@ struct boss_ayamiss : public BossAI
         {
             _phase = PHASE_GROUND;
             me->ClearUnitState(UNIT_STATE_ROOT);
+            me->SetReactState(REACT_PASSIVE);
             me->SetCanFly(false);
             me->SetDisableGravity(false);
             me->GetMotionMaster()->MovePath(me->GetEntry() * 10, false);
-            DoResetThreat();
-
-            _scheduler.Schedule(5s, 8s, [this](TaskContext context) {
-                DoCastVictim(SPELL_LASH);
-                context.Repeat(8s, 15s);
-            }).Schedule(16s, [this](TaskContext context)
-            {
-                DoCastSelf(SPELL_THRASH);
-                context.Repeat();
-            });
-
-            _scheduler.DelayAll(5s);
-            _scheduler.CancelGroup(PHASE_AIR);
+            DoResetThreatList();
+            scheduler.CancelGroup(PHASE_AIR);
         }
 
         if (!_enraged && me->HealthBelowPctDamaged(20, damage))
@@ -236,14 +237,13 @@ struct boss_ayamiss : public BossAI
         if (!UpdateVictim())
             return;
 
-        _scheduler.Update(diff,
+        scheduler.Update(diff,
             std::bind(&BossAI::DoMeleeAttackIfReady, this));
     }
 private:
     GuidList _swarmers;
     uint8 _phase;
     bool _enraged;
-    TaskScheduler _scheduler;
     Position homePos;
 };
 
@@ -270,6 +270,7 @@ struct npc_hive_zara_larva : public ScriptedAI
         if (Creature* ayamiss = _instance->GetCreature(DATA_AYAMISS))
         {
             ayamiss->AI()->JustSummoned(summon);
+            summon->SetInCombatWithZone();
         }
     }
 
