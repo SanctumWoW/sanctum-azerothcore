@@ -80,7 +80,7 @@ public:
     {
         // insert or replace
         _storedTargets.erase(id);
-        _storedTargets.emplace(id, ObjectGuidVector(GetBaseObject(), targets));
+        _storedTargets.emplace(id, ObjectGuidVector(targets));
     }
 
     bool IsSmart(Creature* c = nullptr)
@@ -112,11 +112,11 @@ public:
         return smart;
     }
 
-    ObjectVector const* GetStoredTargetVector(uint32 id) const
+    ObjectVector const* GetStoredTargetVector(uint32 id, WorldObject const& ref) const
     {
         auto itr = _storedTargets.find(id);
         if (itr != _storedTargets.end())
-            return itr->second.GetObjectVector();
+            return itr->second.GetObjectVector(ref);
         return nullptr;
     }
 
@@ -232,6 +232,9 @@ public:
     bool AllowPhaseReset() const { return _allowPhaseReset; }
     void SetPhaseReset(bool allow) { _allowPhaseReset = allow; }
 
+    void AddCreatureSummon(ObjectGuid const& guid);
+    void RemoveCreatureSummon(ObjectGuid const& guid);
+
 private:
     void IncPhase(uint32 p);
     void DecPhase(uint32 p);
@@ -306,6 +309,8 @@ private:
         SmartScriptHolder s;
         return s;
     }
+
+    GuidUnorderedSet _summonList;
 };
 
 #endif

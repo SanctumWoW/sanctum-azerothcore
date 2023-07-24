@@ -122,6 +122,10 @@ enum NPCEntries
     NPC_ARMY_OF_THE_DEAD        = 24207,
     NPC_EBON_GARGOYLE           = 27829,
 
+    // Hunter
+    NPC_VENOMOUS_SNAKE          = 19833,
+    NPC_VIPER                   = 19921,
+
     // Generic
     NPC_GENERIC_IMP             = 12922,
     NPC_GENERIC_VOIDWALKER      = 8996
@@ -162,6 +166,7 @@ enum PetScalingSpells
     SPELL_EARTH_ELEMENTAL_SCALING_02    = 65226,
     SPELL_EARTH_ELEMENTAL_SCALING_03    = 65227,
     SPELL_EARTH_ELEMENTAL_SCALING_04    = 65228,
+    SPELL_ORC_RACIAL_COMMAND_SHAMAN     = 65223,
 
     // Priest
     SPELL_SHADOWFIEND_SCALING_01        = 35661,
@@ -182,7 +187,7 @@ enum PetScalingSpells
     SPELL_MAGE_PET_SCALING_04           = 35660,
 
     // Death Knight
-    SPELL_ORC_RACIAL_COMMAND            = 65221,
+    SPELL_ORC_RACIAL_COMMAND_DK         = 65221,
     SPELL_NIGHT_OF_THE_DEAD_AVOIDANCE   = 62137,
     SPELL_DK_PET_SCALING_01             = 51996,
     SPELL_DK_PET_SCALING_02             = 54566,

@@ -21,6 +21,8 @@
 #include "CreatureAIImpl.h"
 #include "SpellScript.h"
 
+#define DataHeader "ML"
+
 #define MagtheridonsLairScriptName "instance_magtheridons_lair"
 
 enum DataTypes
@@ -59,5 +61,7 @@ inline AI* GetMagtheridonsLairAI(T* obj)
 {
     return GetInstanceAI<AI>(obj, MagtheridonsLairScriptName);
 }
+
+#define RegisterMagtheridonsLairCreatureAI(ai_name) RegisterCreatureAIWithFactory(ai_name, GetMagtheridonsLairAI)
 
 #endif

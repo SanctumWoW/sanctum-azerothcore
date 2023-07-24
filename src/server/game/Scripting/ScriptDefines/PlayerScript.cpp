@@ -146,11 +146,19 @@ void ScriptMgr::OnPlayerMoneyChanged(Player* player, int32& amount)
     });
 }
 
-void ScriptMgr::OnGivePlayerXP(Player* player, uint32& amount, Unit* victim)
+void ScriptMgr::OnBeforeLootMoney(Player* player, Loot* loot)
 {
     ExecuteScript<PlayerScript>([&](PlayerScript* script)
     {
-        script->OnGiveXP(player, amount, victim);
+        script->OnBeforeLootMoney(player, loot);
+    });
+}
+
+void ScriptMgr::OnGivePlayerXP(Player* player, uint32& amount, Unit* victim, uint8 xpSource)
+{
+    ExecuteScript<PlayerScript>([&](PlayerScript* script)
+    {
+        script->OnGiveXP(player, amount, victim, xpSource);
     });
 }
 
@@ -582,6 +590,22 @@ void ScriptMgr::OnLootItem(Player* player, Item* item, uint32 count, ObjectGuid 
     });
 }
 
+void ScriptMgr::OnBeforeFillQuestLootItem(Player* player, LootItem& item)
+{
+    ExecuteScript<PlayerScript>([&](PlayerScript* script)
+    {
+        script->OnBeforeFillQuestLootItem(player, item);
+    });
+}
+
+void ScriptMgr::OnStoreNewItem(Player* player, Item* item, uint32 count)
+{
+    ExecuteScript<PlayerScript>([&](PlayerScript* script)
+    {
+        script->OnStoreNewItem(player, item, count);
+    });
+}
+
 void ScriptMgr::OnCreateItem(Player* player, Item* item, uint32 count)
 {
     ExecuteScript<PlayerScript>([&](PlayerScript* script)
@@ -598,11 +622,57 @@ void ScriptMgr::OnQuestRewardItem(Player* player, Item* item, uint32 count)
     });
 }
 
+bool ScriptMgr::CanPlaceAuctionBid(Player* player, AuctionEntry* auction)
+{
+    auto ret = IsValidBoolScript<PlayerScript>([&](PlayerScript *script)
+    {
+       return !script->CanPlaceAuctionBid(player, auction);
+    });
+
+    if (ret && *ret)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+void ScriptMgr::OnGroupRollRewardItem(Player* player, Item* item, uint32 count, RollVote voteType, Roll* roll)
+{
+    ExecuteScript<PlayerScript>([&](PlayerScript* script)
+    {
+        script->OnGroupRollRewardItem(player, item, count, voteType, roll);
+    });
+}
+
+bool ScriptMgr::OnBeforeOpenItem(Player* player, Item* item)
+{
+    auto ret = IsValidBoolScript<PlayerScript>([&](PlayerScript* script)
+        {
+            return !script->OnBeforeOpenItem(player, item);
+        });
+
+    if (ret && *ret)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 void ScriptMgr::OnFirstLogin(Player* player)
 {
     ExecuteScript<PlayerScript>([&](PlayerScript* script)
     {
         script->OnFirstLogin(player);
+    });
+}
+
+void ScriptMgr::OnSetMaxLevel(Player* player, uint32& maxPlayerLevel)
+{
+    ExecuteScript<PlayerScript>([&](PlayerScript* script)
+    {
+        script->OnSetMaxLevel(player, maxPlayerLevel);
     });
 }
 
@@ -843,6 +913,37 @@ bool ScriptMgr::CanSendMail(Player* player, ObjectGuid receiverGuid, ObjectGuid 
     return true;
 }
 
+bool ScriptMgr::CanSendErrorAlreadyLooted(Player* player)
+{
+    auto ret = IsValidBoolScript<PlayerScript>([&](PlayerScript* script)
+    {
+        return !script->CanSendErrorAlreadyLooted(player);
+    });
+
+    if (ret && *ret)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+void ScriptMgr::OnAfterCreatureLoot(Player* player)
+{
+    ExecuteScript<PlayerScript>([&](PlayerScript* script)
+    {
+        script->OnAfterCreatureLoot(player);
+    });
+}
+
+void ScriptMgr::OnAfterCreatureLootMoney(Player* player)
+{
+    ExecuteScript<PlayerScript>([&](PlayerScript* script)
+    {
+        script->OnAfterCreatureLootMoney(player);
+    });
+}
+
 void ScriptMgr::PetitionBuy(Player* player, Creature* creature, uint32& charterid, uint32& cost, uint32& type)
 {
     ExecuteScript<PlayerScript>([&](PlayerScript* script)
@@ -911,6 +1012,35 @@ void ScriptMgr::OnGetMaxSkillValue(Player* player, uint32 skill, int32& result, 
     {
         script->OnGetMaxSkillValue(player, skill, result, IsPure);
     });
+}
+
+void ScriptMgr::OnUpdateGatheringSkill(Player *player, uint32 skillId, uint32 currentLevel, uint32 gray, uint32 green, uint32 yellow, uint32 &gain) {
+    ExecuteScript<PlayerScript>([&](PlayerScript* script)
+    {
+        script->OnUpdateGatheringSkill(player, skillId, currentLevel, gray, green, yellow, gain);
+    });
+}
+
+void ScriptMgr::OnUpdateCraftingSkill(Player *player, SkillLineAbilityEntry const* skill, uint32 currentLevel, uint32& gain) {
+    ExecuteScript<PlayerScript>([&](PlayerScript* script)
+    {
+        script->OnUpdateCraftingSkill(player, skill, currentLevel, gain);
+    });
+}
+
+bool ScriptMgr::OnUpdateFishingSkill(Player* player, int32 skill, int32 zone_skill, int32 chance, int32 roll)
+{
+    auto ret = IsValidBoolScript<PlayerScript>([&](PlayerScript* script)
+    {
+        return !script->OnUpdateFishingSkill(player, skill, zone_skill, chance, roll);
+    });
+
+    if (ret && *ret)
+    {
+        return false;
+    }
+
+    return true;
 }
 
 bool ScriptMgr::CanAreaExploreAndOutdoor(Player* player)
@@ -1225,12 +1355,21 @@ void ScriptMgr::OnGetArenaTeamId(Player* player, uint8 slot, uint32& result)
     });
 }
 
+//Signifies that IsFfaPvp has been called.
 void ScriptMgr::OnIsFFAPvP(Player* player, bool& result)
 {
     ExecuteScript<PlayerScript>([&](PlayerScript* script)
     {
         script->OnIsFFAPvP(player, result);
     });
+}
+//Fires whenever the UNIT_BYTE2_FLAG_FFA_PVP bit is Changed
+void ScriptMgr::OnFfaPvpStateUpdate(Player* player, bool result)
+{
+    ExecuteScript<PlayerScript>([&](PlayerScript* script)
+        {
+            script->OnFfaPvpStateUpdate(player, result);
+        });
 }
 
 void ScriptMgr::OnIsPvP(Player* player, bool& result)
@@ -1346,6 +1485,14 @@ void ScriptMgr::OnPlayerResurrect(Player* player, float restore_percent, bool ap
     ExecuteScript<PlayerScript>([&](PlayerScript* script)
     {
         script->OnPlayerResurrect(player, restore_percent, applySickness);
+    });
+}
+
+void ScriptMgr::OnBeforeChooseGraveyard(Player* player, TeamId teamId, bool nearCorpse, uint32& graveyardOverride)
+{
+    ExecuteScript<PlayerScript>([&](PlayerScript* script)
+    {
+        script->OnBeforeChooseGraveyard(player, teamId, nearCorpse, graveyardOverride);
     });
 }
 

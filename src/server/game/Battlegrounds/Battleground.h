@@ -99,6 +99,7 @@ enum BattlegroundMarks
 {
     SPELL_WS_MARK_LOSER             = 24950,
     SPELL_WS_MARK_WINNER            = 24951,
+    SPELL_WS_MARK_TIE               = 66126,
     SPELL_AB_MARK_LOSER             = 24952,
     SPELL_AB_MARK_WINNER            = 24953,
     SPELL_AV_MARK_LOSER             = 24954,
@@ -453,7 +454,7 @@ public:
 
     void EndBattleground(PvPTeamId winnerTeamId);
 
-    // deprecated, need delete
+    /// @deprecated need delete
     virtual void EndBattleground(TeamId winnerTeamId)
     {
         EndBattleground(GetPvPTeamId(winnerTeamId));
@@ -524,7 +525,7 @@ public:
     void HandleTriggerBuff(GameObject* gameObject);
     void SetHoliday(bool is_holiday);
 
-    // TODO: make this protected:
+    /// @todo: make this protected:
     typedef GuidVector BGObjects;
     typedef GuidVector BGCreatures;
     BGObjects BgObjects;

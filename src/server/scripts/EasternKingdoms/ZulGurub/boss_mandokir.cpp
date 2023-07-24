@@ -184,16 +184,16 @@ public:
             instance->SaveToDB();
         }
 
-        void EnterCombat(Unit* /*who*/) override
+        void JustEngagedWith(Unit* /*who*/) override
         {
-            _EnterCombat();
-            events.ScheduleEvent(EVENT_OVERPOWER, 1000);
-            events.ScheduleEvent(EVENT_MORTAL_STRIKE, urand(14000, 28000));
-            events.ScheduleEvent(EVENT_WHIRLWIND, urand(24000, 30000));
-            events.ScheduleEvent(EVENT_CHECK_OHGAN, 1000);
-            events.ScheduleEvent(EVENT_WATCH_PLAYER, urand(12000, 24000));
-            events.ScheduleEvent(EVENT_CHARGE_PLAYER, urand(30000, 40000));
-            events.ScheduleEvent(EVENT_CLEAVE, 1000);
+            _JustEngagedWith();
+            events.ScheduleEvent(EVENT_OVERPOWER, 1s);
+            events.ScheduleEvent(EVENT_MORTAL_STRIKE, 14s, 28s);
+            events.ScheduleEvent(EVENT_WHIRLWIND, 24s, 30s);
+            events.ScheduleEvent(EVENT_CHECK_OHGAN, 1s);
+            events.ScheduleEvent(EVENT_WATCH_PLAYER, 12s, 24s);
+            events.ScheduleEvent(EVENT_CHARGE_PLAYER, 30s, 40s);
+            events.ScheduleEvent(EVENT_CLEAVE, 1s);
             me->SetHomePosition(me->GetPositionX(), me->GetPositionY(), me->GetPositionZ(), me->GetOrientation());
             Talk(SAY_AGGRO);
             me->Dismount();
@@ -302,7 +302,7 @@ public:
                     if (!_useExecute)
                     {
                         _useExecute = true;
-                        events.ScheduleEvent(EVENT_EXECUTE, 1000);
+                        events.ScheduleEvent(EVENT_EXECUTE, 1s);
                     }
                 }
                 else if (_useExecute)
@@ -311,6 +311,12 @@ public:
                     events.CancelEvent(EVENT_EXECUTE);
                 }
             }
+        }
+
+        bool OnTeleportUnreacheablePlayer(Player* player) override
+        {
+            DoCast(player, SPELL_SUMMON_PLAYER, true);
+            return true;
         }
 
         void DoMeleeAttackIfReady(bool ignoreCasting)
@@ -366,15 +372,16 @@ public:
                                 if (instance->GetBossState(DATA_MANDOKIR) == SPECIAL)
                                 {
                                     me->GetMotionMaster()->MovePoint(0, PosMandokir[1].m_positionX, PosMandokir[1].m_positionY, PosMandokir[1].m_positionZ);
-                                    events.ScheduleEvent(EVENT_STARTED, 6000);
+                                    events.ScheduleEvent(EVENT_STARTED, 6s);
                                 }
                                 else
                                 {
-                                    events.ScheduleEvent(EVENT_CHECK_START, 1000);
+                                    events.ScheduleEvent(EVENT_CHECK_START, 1s);
                                 }
                                 break;
                             case EVENT_STARTED:
                                 me->SetImmuneToAll(false);
+                                me->SetInCombatWithZone();
                                 break;
                             default:
                                 break;
@@ -401,20 +408,20 @@ public:
                     case EVENT_OVERPOWER:
                         if (DoCastVictim(SPELL_OVERPOWER) == SPELL_CAST_OK)
                         {
-                            events.ScheduleEvent(EVENT_OVERPOWER, urand(6000, 8000));
+                            events.ScheduleEvent(EVENT_OVERPOWER, 6s, 8s);
                         }
                         else
                         {
-                            events.ScheduleEvent(EVENT_OVERPOWER, 1000);
+                            events.ScheduleEvent(EVENT_OVERPOWER, 1s);
                         }
                         break;
                     case EVENT_MORTAL_STRIKE:
                         DoCastVictim(SPELL_MORTAL_STRIKE);
-                        events.ScheduleEvent(EVENT_MORTAL_STRIKE, urand(14000, 28000));
+                        events.ScheduleEvent(EVENT_MORTAL_STRIKE, 14s, 28s);
                         break;
                     case EVENT_WHIRLWIND:
                         DoCast(me, SPELL_WHIRLWIND);
-                        events.ScheduleEvent(EVENT_WHIRLWIND, urand(22000, 26000));
+                        events.ScheduleEvent(EVENT_WHIRLWIND, 22s,  26s);
                         break;
                     case EVENT_CHECK_OHGAN:
                         if (instance->GetBossState(DATA_OHGAN) == DONE)
@@ -424,7 +431,7 @@ public:
                         }
                         else
                         {
-                            events.ScheduleEvent(EVENT_CHECK_OHGAN, 1000);
+                            events.ScheduleEvent(EVENT_CHECK_OHGAN, 1s);
                         }
                         break;
                     case EVENT_WATCH_PLAYER:
@@ -434,7 +441,7 @@ public:
                             Talk(SAY_WATCH, player);
                             _chargeTarget = std::make_pair(player->GetGUID(), 0.f);
                         }
-                        events.ScheduleEvent(EVENT_WATCH_PLAYER, urand(12000, 24000));
+                        events.ScheduleEvent(EVENT_WATCH_PLAYER, 12s, 24s);
                         break;
                     case EVENT_CHARGE_PLAYER:
                         if (Unit* target = SelectTarget(SelectTargetMethod::MinDistance, 0, [this](Unit const* target)
@@ -447,23 +454,23 @@ public:
                             }))
                         {
                             DoCast(target, SPELL_CHARGE);
-                            events.DelayEvents(1500);
+                            events.DelayEvents(1500ms);
                             if (Unit* mainTarget = SelectTarget(SelectTargetMethod::MaxThreat, 0, 100.0f))
                             {
-                                me->GetThreatMgr().modifyThreatPercent(mainTarget, -100);
+                                me->GetThreatMgr().ModifyThreatByPercent(mainTarget, -100);
                             }
                         }
-                        events.ScheduleEvent(EVENT_CHARGE_PLAYER, urand(30000, 40000));
+                        events.ScheduleEvent(EVENT_CHARGE_PLAYER, 30s, 40s);
                         break;
                     case EVENT_EXECUTE:
                         DoCastVictim(SPELL_EXECUTE, true);
-                        events.ScheduleEvent(EVENT_EXECUTE, urand(7000, 14000));
+                        events.ScheduleEvent(EVENT_EXECUTE, 7s, 14s);
                         break;
                     case EVENT_CLEAVE:
                         {
                             std::list<Unit*> meleeRangeTargets;
-                            auto i = me->GetThreatMgr().getThreatList().begin();
-                            for (; i != me->GetThreatMgr().getThreatList().end(); ++i)
+                            auto i = me->GetThreatMgr().GetThreatList().begin();
+                            for (; i != me->GetThreatMgr().GetThreatList().end(); ++i)
                             {
                                 Unit* target = (*i)->getTarget();
                                 if (me->IsWithinMeleeRange(target))
@@ -474,11 +481,11 @@ public:
                             if (meleeRangeTargets.size() >= 5)
                             {
                                 DoCastVictim(SPELL_MANDOKIR_CLEAVE);
-                                events.ScheduleEvent(EVENT_CLEAVE, urand(10000, 20000));
+                                events.ScheduleEvent(EVENT_CLEAVE, 10s, 20s);
                             }
                             else
                             {
-                                events.ScheduleEvent(EVENT_CLEAVE, 1000);
+                                events.ScheduleEvent(EVENT_CLEAVE, 1s);
                             }
                             break;
                         }
@@ -507,7 +514,7 @@ public:
 enum OhganSpells
 {
     SPELL_SUNDERARMOR         = 24317,
-    SPELL_THRASH              = 3417 // Triggers 3391
+    SPELL_THRASH              = 3391
 };
 
 class npc_ohgan : public CreatureScript
@@ -521,7 +528,6 @@ public:
 
         void Reset() override
         {
-            me->AddAura(SPELL_THRASH, me);
             _scheduler.CancelAll();
             _scheduler.SetValidator([this]
             {
@@ -531,15 +537,20 @@ public:
             reviveGUID.Clear();
         }
 
-        void EnterCombat(Unit* victim) override
+        void JustEngagedWith(Unit* who) override
         {
-            if (victim->GetTypeId() != TYPEID_PLAYER)
+            if (who->GetTypeId() != TYPEID_PLAYER)
                 return;
 
             _scheduler.Schedule(6s, 12s, [this](TaskContext context)
             {
                 DoCastVictim(SPELL_SUNDERARMOR);
                 context.Repeat(6s, 12s);
+            });
+            _scheduler.Schedule(12s, 18s, [this](TaskContext context)
+            {
+                DoCastSelf(SPELL_THRASH);
+                context.Repeat(12s, 18s);
             });
         }
 
@@ -661,7 +672,7 @@ struct npc_vilebranch_speaker : public ScriptedAI
         _scheduler.CancelAll();
     }
 
-    void EnterCombat(Unit* /*who*/) override
+    void JustEngagedWith(Unit* /*who*/) override
     {
         _scheduler
             .Schedule(2s, 4s, [this](TaskContext context)
@@ -713,11 +724,14 @@ public:
             {
                 if (Unit* target = GetTarget())
                 {
-                    if (Creature* caster = GetCaster()->ToCreature())
+                    if (Unit* caster = GetCaster())
                     {
-                        if (caster->IsAIEnabled)
+                        if (Creature* cCaster = caster->ToCreature())
                         {
-                            caster->AI()->SetGUID(target->GetGUID(), ACTION_CHARGE);
+                            if (cCaster->IsAIEnabled)
+                            {
+                                cCaster->AI()->SetGUID(target->GetGUID(), ACTION_CHARGE);
+                            }
                         }
                     }
                 }
