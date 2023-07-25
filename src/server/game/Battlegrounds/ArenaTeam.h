@@ -93,6 +93,7 @@ ERR_ARENA_TEAM_LEVEL_TOO_LOW_I
 // EnumUtils: DESCRIBE THIS
 enum ArenaTeamTypes
 {
+    ARENA_TEAM_1v1      = 1,
     ARENA_TEAM_2v2      = 2,
     ARENA_TEAM_3v3      = 3,
     ARENA_TEAM_5v5      = 5
@@ -102,7 +103,8 @@ enum ArenaSlot
 {
     ARENA_SLOT_2v2,
     ARENA_SLOT_3v3,
-    ARENA_SLOT_5v5
+    ARENA_SLOT_5v5,
+    ARENA_SLOT_1v1
 };
 
 struct ArenaTeamMember

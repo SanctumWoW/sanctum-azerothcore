@@ -151,7 +151,7 @@ void WorldSession::HandleArenaTeamInviteOpcode(WorldPacket& recvData)
         return;
     }
 
-    if (arenaTeam->GetMembersSize() >= arenaTeam->GetType() * 2 || (arenaTeam->GetType() == 5 && arenaTeam->GetMembersSize() >= 1))
+    if (arenaTeam->GetMembersSize() >= arenaTeam->GetType() * 2 || (arenaTeam->GetType() == 1 && arenaTeam->GetMembersSize() >= 1))
     {
         SendArenaTeamCommandResult(ERR_ARENA_TEAM_CREATE_S, arenaTeam->GetName(), "", ERR_ARENA_TEAM_TOO_MANY_MEMBERS_S);
         return;

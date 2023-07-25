@@ -673,7 +673,7 @@ void WorldSession::HandleBattlemasterJoinArena(WorldPacket& recvData)
     recvData >> guid >> arenaslot >> asGroup >> isRated;
 
     // can't queue for rated without a group
-    if (isRated && !asGroup)
+    if (isRated && !asGroup && arenaslot != ARENA_SLOT_1v1)
         return;
 
     // ignore if we already in BG or BG queue
@@ -702,6 +702,9 @@ void WorldSession::HandleBattlemasterJoinArena(WorldPacket& recvData)
             break;
         case 2:
             arenatype = ARENA_TYPE_5v5;
+            break;
+        case 3:
+            arenatype = ARENA_TYPE_1v1;
             break;
         default:
             LOG_ERROR("network", "Unknown arena slot {} at HandleBattlemasterJoinArena()", arenaslot);

@@ -671,6 +671,8 @@ uint32 ArenaTeam::GetPoints(uint32 memberRating)
         points *= 0.76f;
     else if (Type == ARENA_TEAM_3v3)
         points *= 0.88f;
+    else if (Type == ARENA_TEAM_1v1)
+        points *= 0.64f;
 
     sScriptMgr->OnGetArenaPoints(this, points);
 
@@ -1085,6 +1087,7 @@ void ArenaTeam::CreateTempArenaTeam(std::vector<Player*> playerList, uint8 type,
 // init/update unordered_map ArenaSlotByType
 std::unordered_map<uint32, uint8> ArenaTeam::ArenaSlotByType =
 {
+    { ARENA_TEAM_1v1, ARENA_SLOT_1v1},
     { ARENA_TEAM_2v2, ARENA_SLOT_2v2},
     { ARENA_TEAM_3v3, ARENA_SLOT_3v3},
     { ARENA_TEAM_5v5, ARENA_SLOT_5v5}
@@ -1093,8 +1096,8 @@ std::unordered_map<uint32, uint8> ArenaTeam::ArenaSlotByType =
 // init/update unordered_map ArenaReqPlayersForType
 std::unordered_map<uint8, uint8> ArenaTeam::ArenaReqPlayersForType =
 {
+    { ARENA_TYPE_1v1, 2},
     { ARENA_TYPE_2v2, 4},
     { ARENA_TYPE_3v3, 6},
-    { ARENA_TYPE_5v5, 10},
-    { 1, 2}
+    { ARENA_TYPE_5v5, 10}
 };

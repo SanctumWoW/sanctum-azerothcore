@@ -115,6 +115,11 @@ void WorldSession::HandlePetitionBuyOpcode(WorldPacket& recvData)
                 cost = sWorld->getIntConfig(CONFIG_CHARTER_COST_ARENA_5v5);
                 type = ARENA_TEAM_CHARTER_5v5_TYPE;
                 break;
+            case 4:
+                charterid = ARENA_TEAM_CHARTER_5v5;
+                cost = sWorld->getIntConfig(CONFIG_CHARTER_COST_ARENA_5v5);
+                type = ARENA_TEAM_CHARTER_1v1_TYPE;
+                break;
             default:
                 LOG_DEBUG("network", "unknown selection at buy arena petition: {}", clientIndex);
                 return;
