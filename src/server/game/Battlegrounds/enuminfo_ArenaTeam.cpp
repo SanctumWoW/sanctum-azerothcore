@@ -31,6 +31,7 @@ AC_API_EXPORT EnumText EnumUtils<ArenaTeamTypes>::ToString(ArenaTeamTypes value)
 {
     switch (value)
     {
+        case ARENA_TEAM_1v1: return { "ARENA_TEAM_1v1", "ARENA_TEAM_1v1", "" };
         case ARENA_TEAM_2v2: return { "ARENA_TEAM_2v2", "ARENA_TEAM_2v2", "" };
         case ARENA_TEAM_3v3: return { "ARENA_TEAM_3v3", "ARENA_TEAM_3v3", "" };
         case ARENA_TEAM_5v5: return { "ARENA_TEAM_5v5", "ARENA_TEAM_5v5", "" };
@@ -49,6 +50,7 @@ AC_API_EXPORT ArenaTeamTypes EnumUtils<ArenaTeamTypes>::FromIndex(size_t index)
         case 0: return ARENA_TEAM_2v2;
         case 1: return ARENA_TEAM_3v3;
         case 2: return ARENA_TEAM_5v5;
+        case 3: return ARENA_TEAM_1v1;
         default: throw std::out_of_range("index");
     }
 }
@@ -61,6 +63,7 @@ AC_API_EXPORT size_t EnumUtils<ArenaTeamTypes>::ToIndex(ArenaTeamTypes value)
         case ARENA_TEAM_2v2: return 0;
         case ARENA_TEAM_3v3: return 1;
         case ARENA_TEAM_5v5: return 2;
+        case ARENA_TEAM_1v1: return 3;
         default: throw std::out_of_range("value");
     }
 }
