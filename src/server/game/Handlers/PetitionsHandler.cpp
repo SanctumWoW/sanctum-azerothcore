@@ -859,7 +859,7 @@ void WorldSession::SendPetitionShowList(ObjectGuid guid)
         CharterCost = sWorld->getIntConfig(CONFIG_CHARTER_COST_ARENA_2v2);
 
         // 2v2
-        data << uint8(3);                                   // count
+        data << uint8(4);                                   // count
         sScriptMgr->PetitionShowList(_player, creature, CharterEntry, CharterDispayID, CharterCost);
         data << uint32(1);                                  // index
         data << CharterEntry;                               // charter entry
@@ -895,6 +895,20 @@ void WorldSession::SendPetitionShowList(ObjectGuid guid)
         data << CharterCost;                                // charter cost
         data << uint32(5);                                  // unknown
         data << uint32(5);                                  // required signs?
+
+        // For 1v1 default
+        CharterEntry = ARENA_TEAM_CHARTER_5v5;
+        CharterDispayID = CHARTER_DISPLAY_ID;
+        CharterCost = sWorld->getIntConfig(CONFIG_CHARTER_COST_ARENA_5v5);
+
+        // 1v1
+        sScriptMgr->PetitionShowList(_player, creature, CharterEntry, CharterDispayID, CharterCost);
+        data << uint32(4);                                  // index
+        data << CharterEntry;                               // charter entry
+        data << CharterDispayID;                            // charter display id
+        data << CharterCost;                                // charter cost
+        data << uint32(1);                                  // unknown
+        data << uint32(1);                                  // required signs?
     }
 
     SendPacket(&data);
